@@ -72,6 +72,12 @@ const app = App().ws<AuthInfo>("/*", {
 const kafka = new Kafka({
   clientId: Config.KAFKA_CLIENT_ID,
   brokers: Config.KAFKA_BROKERS,
+  retry: {
+    retries: 3,
+    initialRetryTime: 1000,
+    maxRetryTime: 60000,
+    multiplier: 7,
+  },
 });
 
 const admin = kafka.admin();
@@ -85,6 +91,8 @@ while (topics.find((t) => t === Config.KAFKA_CHAT_TOPIC) === undefined) {
       topics: [
         {
           topic: Config.KAFKA_CHAT_TOPIC,
+          numPartitions: 1,
+          replicationFactor: 3,
         },
       ],
     });

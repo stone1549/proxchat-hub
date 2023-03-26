@@ -85,6 +85,7 @@ export interface ChatMessageNotificationMessage
 
 export const newChatMessageNotificationMessage = (
   auth: AuthInfo,
+  id: string,
   clientId: string,
   content: string,
   position: Location,
@@ -95,7 +96,7 @@ export const newChatMessageNotificationMessage = (
     payload: {
       type: ServerMessageType.ChatMessageNotification,
       message: {
-        id: randomUUID().toString(),
+        id,
         clientId,
         content,
         sender: {

@@ -12,6 +12,7 @@ export const clientSendChatHandler: ClientMessageHandler = {
       getHub().broadcast(
         newChatMessageNotificationMessage(
           ws.getUserData(),
+          message.id,
           message.payload.clientId,
           message.payload.content,
           message.payload.position,

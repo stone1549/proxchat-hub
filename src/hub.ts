@@ -1,13 +1,13 @@
-import { ServerMessage, ServerPayload } from "./protocol.js";
+import { ChatMessageNotificationMessage } from "./protocol.js";
 import { AuthInfo } from "./domain.js";
 import { TemplatedApp, WebSocket } from "uWebSockets.js";
-import { Producer } from "./broker/producer";
+import { Producer } from "./broker/producer.js";
 
 export interface Hub {
   addClient: (ws: WebSocket<AuthInfo>) => void;
   removeClient: (ws: WebSocket<AuthInfo>) => void;
   broadcast: (
-    message: ServerMessage<ServerPayload>,
+    message: ChatMessageNotificationMessage,
     sendToBroker: boolean
   ) => void;
 }
@@ -34,14 +34,16 @@ class HubImpl implements Hub {
   }
 
   broadcast(
-    message: ServerMessage<ServerPayload>,
+    message: ChatMessageNotificationMessage,
     sendToBroker: boolean = true
   ) {
     this.app.publish("chat", JSON.stringify(message));
     if (sendToBroker) {
-      this.producer.send(JSON.stringify(message)).catch((e) => {
-        console.error(e);
-      });
+      this.producer
+        .send(message.payload.message.sender.id, JSON.stringify(message))
+        .catch((e) => {
+          console.error(e);
+        });
     }
   }
 }

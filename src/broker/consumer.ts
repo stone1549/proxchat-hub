@@ -1,7 +1,11 @@
 import { Hub } from "../hub.js";
 import { Kafka } from "kafkajs";
 import { Config } from "../config.js";
-import { ServerMessage, ServerPayload } from "../protocol.js";
+import {
+  ChatMessageNotificationMessage,
+  ServerMessage,
+  ServerPayload,
+} from "../protocol.js";
 
 export interface Consumer {
   start: () => void;
@@ -25,7 +29,7 @@ export const newConsumer = (kafka: Kafka, hub: Hub): Consumer => {
             ) {
               const serverMessage = JSON.parse(
                 message.value.toString()
-              ) as ServerMessage<ServerPayload>;
+              ) as ChatMessageNotificationMessage;
               hub.broadcast(serverMessage, false);
             }
           } catch (e) {
