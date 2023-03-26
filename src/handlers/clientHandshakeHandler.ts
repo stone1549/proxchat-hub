@@ -5,12 +5,15 @@ import {
   newErrorResponseMessage,
 } from "../protocol.js";
 import { WebSocket } from "uWebSockets.js";
-import { AuthInfo } from "../domain.js";
+import { UserInfo } from "../domain.js";
 import { getHub } from "../hub.js";
 
 export const clientHandshakeHandler: ClientMessageHandler = {
-  handle: (message, ws: WebSocket<AuthInfo>) => {
+  handle: (message, ws: WebSocket<UserInfo>) => {
     if (isClientHandshakeMessage(message) && message.token) {
+      ws.getUserData().position = message.payload.position;
+      ws.getUserData().radiusOfInterestMeters = message.payload.radius;
+
       ws.send(
         JSON.stringify(newHandshakeResponseMessage(message.id, undefined))
       );

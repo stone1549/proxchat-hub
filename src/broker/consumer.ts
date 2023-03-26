@@ -1,11 +1,7 @@
 import { Hub } from "../hub.js";
 import { Kafka } from "kafkajs";
 import { Config } from "../config.js";
-import {
-  ChatMessageNotificationMessage,
-  ServerMessage,
-  ServerPayload,
-} from "../protocol.js";
+import { ChatMessageNotificationMessage } from "../protocol.js";
 
 export interface Consumer {
   start: () => void;
@@ -20,7 +16,7 @@ export const newConsumer = (kafka: Kafka, hub: Hub): Consumer => {
         fromBeginning: false,
       });
       await consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
+        eachMessage: async ({ message }) => {
           try {
             if (
               message.value?.toString() &&

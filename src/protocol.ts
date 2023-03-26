@@ -1,10 +1,11 @@
-import { AuthInfo, ChatMessage, Location } from "./domain.js";
+import { UserInfo, ChatMessage, Location } from "./domain.js";
 import { DateTime } from "luxon";
 import { randomUUID } from "crypto";
 
 export enum ClientMessageType {
   Handshake = "Handshake",
   SendChatMessage = "SendChatMessage",
+  UpdateLocation = "UpdateLocation",
 }
 
 export enum ServerMessageType {
@@ -35,6 +36,8 @@ export interface ServerMessage<PAYLOAD extends ServerPayload> {
 export interface ClientHandshakeMessage
   extends ClientMessage<{
     type: ClientMessageType.Handshake;
+    position: Location;
+    radius: number;
   }> {}
 
 export const isClientHandshakeMessage = (
@@ -84,7 +87,7 @@ export interface ChatMessageNotificationMessage
   }> {}
 
 export const newChatMessageNotificationMessage = (
-  auth: AuthInfo,
+  auth: UserInfo,
   id: string,
   clientId: string,
   content: string,
@@ -103,11 +106,25 @@ export const newChatMessageNotificationMessage = (
           id: auth.id,
           username: auth.username,
         },
+        position,
         sentAt,
         receivedAt: DateTime.utc(),
       },
     },
   } as ChatMessageNotificationMessage;
+};
+
+export interface ClientUpdateLocationMessage
+  extends ClientMessage<{
+    type: ClientMessageType.SendChatMessage;
+    position: Location;
+    radius: number;
+  }> {}
+
+export const isClientUpdateLocationMessage = (
+  message: ClientMessage<ClientPayload>
+): message is ClientUpdateLocationMessage => {
+  return message.payload.type === ClientMessageType.UpdateLocation;
 };
 
 export interface ErrorResponseMessage

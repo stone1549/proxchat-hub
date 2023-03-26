@@ -1,15 +1,15 @@
 import { ClientMessage, ClientPayload } from "../protocol.js";
 import { WebSocket } from "uWebSockets.js";
 import { clientHandshakeHandler } from "./clientHandshakeHandler.js";
-import { AuthInfo } from "../domain.js";
+import { UserInfo } from "../domain.js";
 import { invalidMessageHandler } from "./invalidMessageHandler.js";
 import { clientSendChatHandler } from "./clientSendChatHandler.js";
-import { Producer } from "../broker/producer";
+import { clientUpdateLocationHandler } from "./clientUpdateLocationHandler.js";
 
 export interface ClientMessageHandler {
   handle: (
     message: ClientMessage<ClientPayload>,
-    ws: WebSocket<AuthInfo>
+    ws: WebSocket<UserInfo>
   ) => void;
 }
 
@@ -21,6 +21,8 @@ export const getClientMessageHandler = (
       return clientHandshakeHandler;
     case "SendChatMessage":
       return clientSendChatHandler;
+    case "UpdateLocation":
+      return clientUpdateLocationHandler;
     default:
       return invalidMessageHandler;
   }

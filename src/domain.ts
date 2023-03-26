@@ -1,8 +1,10 @@
 import { DateTime } from "luxon";
 
-export interface AuthInfo {
+export interface UserInfo {
   id: string;
   username: string;
+  position: Location;
+  radiusOfInterestMeters: number;
 }
 
 export interface ChatMessage {
@@ -12,7 +14,7 @@ export interface ChatMessage {
   sentAt: DateTime;
   receivedAt: DateTime;
   content: string;
-  location: Location;
+  position: Location;
 }
 
 export interface Location {

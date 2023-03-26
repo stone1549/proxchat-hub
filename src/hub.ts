@@ -1,11 +1,12 @@
 import { ChatMessageNotificationMessage } from "./protocol.js";
-import { AuthInfo } from "./domain.js";
+import { UserInfo } from "./domain.js";
 import { TemplatedApp, WebSocket } from "uWebSockets.js";
 import { Producer } from "./broker/producer.js";
+import { delay, haversineDistance } from "./util.js";
 
 export interface Hub {
-  addClient: (ws: WebSocket<AuthInfo>) => void;
-  removeClient: (ws: WebSocket<AuthInfo>) => void;
+  addClient: (ws: WebSocket<UserInfo>) => void;
+  removeClient: (ws: WebSocket<UserInfo>) => void;
   broadcast: (
     message: ChatMessageNotificationMessage,
     sendToBroker: boolean
@@ -13,7 +14,7 @@ export interface Hub {
 }
 
 class HubImpl implements Hub {
-  private clients: WebSocket<AuthInfo>[] = [];
+  private clients: WebSocket<UserInfo>[] = [];
   private app: TemplatedApp;
   private producer: Producer;
 
@@ -22,12 +23,12 @@ class HubImpl implements Hub {
     this.producer = producer;
   }
 
-  addClient(ws: WebSocket<AuthInfo>) {
+  addClient(ws: WebSocket<UserInfo>) {
     this.clients.push(ws);
     ws.subscribe("chat");
   }
 
-  removeClient(ws: WebSocket<AuthInfo>) {
+  removeClient(ws: WebSocket<UserInfo>) {
     this.clients = this.clients.filter(
       (client) => client.getUserData().id !== ws.getUserData().id
     );
@@ -37,7 +38,21 @@ class HubImpl implements Hub {
     message: ChatMessageNotificationMessage,
     sendToBroker: boolean = true
   ) {
-    this.app.publish("chat", JSON.stringify(message));
+    delay(0).then(() => {
+      this.clients.forEach((client) => {
+        if (
+          haversineDistance(
+            client.getUserData().position.lat,
+            client.getUserData().position.long,
+            message.payload.message.position.lat,
+            message.payload.message.position.long
+          ) < client.getUserData().radiusOfInterestMeters
+        ) {
+          client.send(JSON.stringify(message));
+        }
+      });
+    });
+
     if (sendToBroker) {
       this.producer
         .send(message.payload.message.sender.id, JSON.stringify(message))
@@ -47,6 +62,7 @@ class HubImpl implements Hub {
     }
   }
 }
+
 let hub: Hub;
 
 export const initHub = (app: TemplatedApp, producer: Producer) =>

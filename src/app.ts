@@ -5,7 +5,7 @@ import {
   newErrorResponseMessage,
   ClientPayload,
 } from "./protocol.js";
-import { AuthInfo } from "./domain.js";
+import { UserInfo } from "./domain.js";
 import { getClientMessageHandler } from "./handlers/handler.js";
 import { getHub, initHub } from "./hub.js";
 import { Config } from "./config.js";
@@ -16,9 +16,9 @@ import { clientAuthHandlerMiddleware } from "./handlers/clientAuthHandler.js";
 
 const decoder = new TextDecoder("utf-8");
 
-const app = App().ws<AuthInfo>("/*", {
-  maxBackpressure: 1024,
-  maxPayloadLength: 1024,
+const app = App().ws<UserInfo>("/*", {
+  maxBackpressure: 64 * 1024,
+  maxPayloadLength: 16 * 1024,
   compression: DEDICATED_DECOMPRESSOR,
 
   open: (ws) => {
