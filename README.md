@@ -11,12 +11,14 @@ You probably want to checkout the monorepo [yapyapyap](https://www.github.com/st
 ## Configuration
 ### Environment Variables
 
-| Variable      | Description                                    | Possible Values         |
-|---------------|------------------------------------------------|-------------------------|
- | NODE_ENV      | Controls log levels and configuration defaults | development, production |
- | PORT          | Port to run service on                         | number                  |
- | KAFKA_BROKERS | A comma separated list of kafka brokers        | host:9092,host2:9092    |
- | TOKEN_SECRET  | Secret used to sign JWT tokens                 | string                  |
+| Variable         | Description                                    | Possible Values             |
+|------------------|------------------------------------------------|-----------------------------|
+ | NODE_ENV         | Controls log levels and configuration defaults | development, production     |
+ | PORT             | Port to run service on                         | number                      |
+ | KAFKA_BROKERS    | A comma separated list of kafka brokers        | host:9092,host2:9092        |
+ | TOKEN_SECRET     | Secret used to sign JWT tokens                 | string                      |
+ | TOKEN_SECRET_KEY | Secret certificate key used to sign JWT tokens | path to file containing key |
+ | TOKEN_PUBLIC_KEY | Public certificate key used to read JWT tokens | path to file containing key |
 
 ## Run
 

@@ -7,6 +7,7 @@ import { delay, haversineDistance } from "./util.js";
 export interface Hub {
   addClient: (ws: WebSocket<UserInfo>) => void;
   removeClient: (ws: WebSocket<UserInfo>) => void;
+  hasClient: (ws: WebSocket<UserInfo>) => boolean;
   broadcast: (
     message: ChatMessageNotificationMessage,
     sendToBroker: boolean
@@ -34,6 +35,12 @@ class HubImpl implements Hub {
     );
   }
 
+  hasClient(ws: WebSocket<UserInfo>) {
+    return this.clients.some(
+      (client) => client.getUserData().id === ws.getUserData().id
+    );
+  }
+
   broadcast(
     message: ChatMessageNotificationMessage,
     sendToBroker: boolean = true
@@ -48,7 +55,16 @@ class HubImpl implements Hub {
             message.payload.message.position.long
           ) < client.getUserData().radiusOfInterestMeters
         ) {
-          client.send(JSON.stringify(message));
+          try {
+            client.send(JSON.stringify(message));
+          } catch (e) {
+            console.error(
+              `Error sending message to client with id ${
+                client.getUserData().id
+              }`,
+              e
+            );
+          }
         }
       });
     });

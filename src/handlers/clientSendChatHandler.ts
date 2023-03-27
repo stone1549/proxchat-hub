@@ -23,7 +23,7 @@ export const clientSendChatHandler: ClientMessageHandler = {
     } else {
       ws.send(
         JSON.stringify(
-          newErrorResponseMessage(message.id, "Invalid send chat message")
+          newErrorResponseMessage(message.id, 500, "Invalid send chat message")
         )
       );
     }

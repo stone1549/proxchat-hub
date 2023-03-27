@@ -12,7 +12,11 @@ export const clientUpdateLocationHandler: ClientMessageHandler = {
     } else {
       ws.send(
         JSON.stringify(
-          newErrorResponseMessage(message.id, "Invalid update location message")
+          newErrorResponseMessage(
+            message.id,
+            500,
+            "Invalid update location message"
+          )
         )
       );
     }

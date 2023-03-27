@@ -130,17 +130,20 @@ export const isClientUpdateLocationMessage = (
 export interface ErrorResponseMessage
   extends ServerMessage<{
     type: ServerMessageType.ErrorResponse;
+    code: number;
     error: string;
   }> {}
 
 export const newErrorResponseMessage: (
   id: string,
+  code: number,
   error: string
-) => ErrorResponseMessage = (id, error) => {
+) => ErrorResponseMessage = (id, code, error) => {
   return {
     id,
     payload: {
       type: ServerMessageType.ErrorResponse,
+      code,
       error,
     },
   };

@@ -24,11 +24,13 @@ const app = App().ws<UserInfo>("/*", {
   open: (ws) => {
     // close the connection if the client doesn't send a handshake message within 30 seconds
     delay(30000).then(() => {
-      if (!ws.getUserData().username) {
-        console.error(
-          "Client did not send a handshake message within 30 seconds, closing connection"
-        );
-        ws.close();
+      if (!ws.getUserData().position) {
+        try {
+          ws.end(1008, "Handshake timeout");
+          ws.close();
+        } catch (e) {
+          //safe to ignore
+        }
       }
     });
   },
@@ -41,6 +43,7 @@ const app = App().ws<UserInfo>("/*", {
         JSON.stringify(
           newErrorResponseMessage(
             "unknown",
+            500,
             "Binary messages are not supported"
           )
         )
@@ -56,17 +59,18 @@ const app = App().ws<UserInfo>("/*", {
         getClientMessageHandler(parsedMessage)
       ).handle(parsedMessage, ws);
     } catch (e) {
-      console.error(e);
       ws.send(
         JSON.stringify(
-          newErrorResponseMessage("unknown", "Invalid message type")
+          newErrorResponseMessage("unknown", 400, "Invalid message type")
         )
       );
     }
   },
   // subscription: (ws, topic, newCount, oldCount) => {},
   drain: (_) => {},
-  close: (_, __, ___) => {},
+  close: (ws, __, ___) => {
+    getHub().removeClient(ws);
+  },
 });
 
 const kafka = new Kafka({
@@ -99,7 +103,7 @@ while (topics.find((t) => t === Config.KAFKA_CHAT_TOPIC) === undefined) {
     await delay(5000);
     topics = await admin.listTopics();
   } catch (e) {
-    console.error(e);
+    // safe to ignore
   }
 }
 await admin.disconnect();

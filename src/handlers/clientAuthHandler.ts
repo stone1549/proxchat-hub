@@ -37,7 +37,9 @@ export const clientAuthHandlerMiddleware: (
         handler.handle(message, ws);
       } else {
         ws.send(
-          JSON.stringify(newErrorResponseMessage(message.id, "Unauthorized"))
+          JSON.stringify(
+            newErrorResponseMessage(message.id, 401, "Unauthorized")
+          )
         );
         return;
       }
