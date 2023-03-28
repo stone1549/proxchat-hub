@@ -4,7 +4,7 @@ import { clientHandshakeHandler } from "./clientHandshakeHandler.js";
 import { UserInfo } from "../domain.js";
 import { invalidMessageHandler } from "./invalidMessageHandler.js";
 import { clientSendChatHandler } from "./clientSendChatHandler.js";
-import { clientUpdateLocationHandler } from "./clientUpdateLocationHandler.js";
+import { clientUpdateStateHandler } from "./clientUpdateStateHandler.js";
 
 export interface ClientMessageHandler {
   handle: (
@@ -21,8 +21,8 @@ export const getClientMessageHandler = (
       return clientHandshakeHandler;
     case "SendChatMessage":
       return clientSendChatHandler;
-    case "UpdateLocation":
-      return clientUpdateLocationHandler;
+    case "UpdateState":
+      return clientUpdateStateHandler;
     default:
       return invalidMessageHandler;
   }

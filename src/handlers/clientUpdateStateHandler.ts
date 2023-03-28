@@ -1,12 +1,12 @@
 import { ClientMessageHandler } from "./handler.js";
 import {
-  isClientUpdateLocationMessage,
+  isClientUpdateStateMessage,
   newErrorResponseMessage,
 } from "../protocol.js";
 
-export const clientUpdateLocationHandler: ClientMessageHandler = {
+export const clientUpdateStateHandler: ClientMessageHandler = {
   handle: (message, ws) => {
-    if (isClientUpdateLocationMessage(message)) {
+    if (isClientUpdateStateMessage(message)) {
       ws.getUserData().position = message.payload.position;
       ws.getUserData().radiusOfInterestMeters = message.payload.radius;
     } else {

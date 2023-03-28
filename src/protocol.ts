@@ -5,7 +5,7 @@ import { randomUUID } from "crypto";
 export enum ClientMessageType {
   Handshake = "Handshake",
   SendChatMessage = "SendChatMessage",
-  UpdateLocation = "UpdateLocation",
+  UpdateState = "UpdateState",
 }
 
 export enum ServerMessageType {
@@ -114,17 +114,17 @@ export const newChatMessageNotificationMessage = (
   } as ChatMessageNotificationMessage;
 };
 
-export interface ClientUpdateLocationMessage
+export interface ClientUpdateStateMessage
   extends ClientMessage<{
-    type: ClientMessageType.SendChatMessage;
+    type: ClientMessageType.UpdateState;
     position: Location;
     radius: number;
   }> {}
 
-export const isClientUpdateLocationMessage = (
+export const isClientUpdateStateMessage = (
   message: ClientMessage<ClientPayload>
-): message is ClientUpdateLocationMessage => {
-  return message.payload.type === ClientMessageType.UpdateLocation;
+): message is ClientUpdateStateMessage => {
+  return message.payload.type === ClientMessageType.UpdateState;
 };
 
 export interface ErrorResponseMessage
